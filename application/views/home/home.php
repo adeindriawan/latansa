@@ -17,18 +17,11 @@
           </figcaption>
         </figure>
       <?php } ?>
-      <figure id="slide-5"><a class="view" href="#"><img src="<?php echo base_url() ?>images/halaman/slider/berita.png" alt=""></a>
-        <figcaption>
-          <h2>Berita &amp; Acara Pondok Terbaru</h2>
-          <p>Temukan berita dan acara Pondok Pesantren La Tansa yang terbaru di sini</p>
-          <p class="right"><a href="<?php echo site_url('home/berita') ?>">Lanjutkan membaca &raquo;</a></p>
-        </figcaption>
-      </figure>
       <!-- ################################################################################################ -->
       <ul id="slide-tabs">
         <li><a href="#slide-1">Mengapa Memilih La Tansa?</a></li>
-        <li><a href="#slide-2">Pendaftaran Santri Baru</a></li>
-        <li><a href="#slide-3">Pendidikan dan Pengalaman Santri</a></li>
+        <li><a href="#slide-2">Informasi Santri Baru</a></li>
+        <li><a href="#slide-3">Pendidikan dan Kegiatan Santri</a></li>
         <li><a href="#slide-4">Kiprah Para Alumni La Tansa</a></li>
         <li><a href="#slide-5">Berita &amp; Acara Pondok Terbaru</a></li>
       </ul>
@@ -45,20 +38,8 @@
       <!-- main body --> 
       <!-- ################################################################################################ -->
       <div class="group btmspace-30"> 
-        <!-- Left Column -->
-        <div class="one_quarter first"> 
-          <!-- ################################################################################################ -->
-          <ul class="nospace">
-            <li class="btmspace-15"><a href="<?php echo site_url('home/calon') ?>"><em class="heading">Calon Santri La Tansa</em> <img class="borderedbox" src="<?php echo base_url() ?>images/demo/220x95.gif" alt=""></a></li>
-            <li class="btmspace-15"><a href="<?php echo site_url('home/santri') ?>"><em class="heading">Santri La Tansa</em> <img class="borderedbox" src="<?php echo base_url() ?>images/demo/220x95.gif" alt=""></a></li>
-            <li class="btmspace-15"><a href="<?php echo site_url('home/wali') ?>"><em class="heading">Wali Santri</em> <img class="borderedbox" src="<?php echo base_url() ?>images/demo/220x95.gif" alt=""></a></li>
-            <li><a href="<?php echo site_url('home/alumni') ?>"><em class="heading">Alumni La Tansa</em> <img class="borderedbox" src="<?php echo base_url() ?>images/demo/220x95.gif" alt=""></a></li>
-          </ul>
-          <!-- ################################################################################################ --> 
-        </div>
-        <!-- / Left Column --> 
         <!-- Middle Column -->
-        <div class="one_half"> 
+        <div class="three_quarter first"> 
           <!-- ################################################################################################ -->
           <h2>Berita &amp; Kegiatan Terkini</h2>
           <ul class="nospace listing">
@@ -92,8 +73,8 @@
           <div class="sdb_holder">
             <h6>Info Singkat</h6>
             <ul class="nospace quickinfo">
-              <li class="clear"><a href="#"><img src="<?php echo base_url() ?>images/demo/80x80.gif" alt=""> Make An Application</a></li>
-              <li class="clear"><a href="#"><img src="<?php echo base_url() ?>images/demo/80x80.gif" alt=""> Order A Prospectus</a></li>
+              <li class="clear"><a href="#"><img src="<?php echo base_url() ?>images/demo/80x80.gif" alt=""> Brosur Ponpes La Tansa</a></li>
+              <li class="clear"><a href="#"><img src="<?php echo base_url() ?>images/demo/80x80.gif" alt=""> Kesempatan Mengajar di La Tansa</a></li>
             </ul>
           </div>
           <!-- ################################################################################################ --> 
@@ -102,17 +83,8 @@
       </div>
       <!-- ################################################################################################ --> 
       <!-- ################################################################################################ -->
-      <div id="twitter" class="group btmspace-30">
-        <div class="one_quarter first center"><a href="#"><i class="fa fa-twitter fa-3x"></i><br>
-          Follow Us On Twitter</a></div>
-        <div class="three_quarter bold">
-          <p>Inteligula congue id elis donec sce sagittis intes id laoreet aenean. Massawisi condisse leo sem ac tincidunt nibh quis dui fauctor et donecnibh elis velit <a href="#">@name</a> - 10:15 AM yesterday</p>
-        </div>
-      </div>
-      <!-- ################################################################################################ --> 
-      <!-- ################################################################################################ -->
       <div class="group">
-        <h2>Quickly Find What You Are Looking For</h2>
+        <h2>Temukan apa yang ingin Anda cari dengan cepat</h2>
         <div class="one_quarter first"> 
           <!-- ################################################################################################ -->
           <ul class="nospace">
@@ -198,9 +170,9 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="exampleModalLabel">Dialog</h4>
+                    <h4 class="modal-title" id="exampleModalLabel" style="color:black;">Dialog</h4>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="color:black;">
                 <?php echo $this->session->flashdata('sesi_habis'); ?>
                 </div>
             </div>
@@ -216,14 +188,14 @@
     </script>
 <?php } ?>
 <?php if ($this->session->flashdata('eror_login')) { ?>
-    <div class="modal fade" id="sesModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal fade" id="errModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="exampleModalLabel">Dialog</h4>
+                    <h4 class="modal-title" id="exampleModalLabel" style="color:black">Dialog</h4>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="color:black">
                 <?php echo $this->session->flashdata('eror_login'); ?>
                 </div>
             </div>
@@ -231,7 +203,7 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#sesModal').modal({
+            $('#errModal').modal({
                 'show':true,
                 'keyboard': false
             });

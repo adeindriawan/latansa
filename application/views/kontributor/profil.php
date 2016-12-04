@@ -149,8 +149,10 @@
     <?php } ?>
     <?php echo $this->session->flashdata('error_resize_gambar'); ?>
     <?php echo $this->session->flashdata('error_resize_thumbnail'); ?>
+    <?php echo $this->session->flashdata('error_resize_avatar'); ?>
     <?php echo $this->session->flashdata('error_crop_gambar'); ?>
     <?php echo $this->session->flashdata('error_crop_thumbnail'); ?>
+    <?php echo $this->session->flashdata('error_crop_avatar'); ?>
     <!--END MAIN WRAPPER -->
 <!-- FOOTER -->
       <div id="footer">

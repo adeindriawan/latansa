@@ -91,6 +91,7 @@ class M_Home extends CI_Model {
 		$this->db->select('artikel.*, staf.username');
 		$this->db->from('artikel');
 		$this->db->where('artikel.kategori', 'Blog');
+		$this->db->where('artikel.status', 'Published');
 
 		$this->db->join('staf', 'artikel.id_penulis = staf.id_staf', 'left');
 
@@ -140,6 +141,43 @@ class M_Home extends CI_Model {
 
 		$this->db->join('staf', 'staf.id_staf = galeri.id_pengunggah', 'left');
 
+		return $this->db->get();
+	}
+
+	public function join_notifikasi_kontributor($id, $limit, $offset)
+	{
+		$this->db->select('notifikasi.*, staf.username');
+		$this->db->from('notifikasi');
+		$this->db->where('notifikasi.untuk_id', $id);
+		$this->db->where('notifikasi.status_notifikasi', 'Sent');
+		$this->db->limit($limit, $offset);
+
+		$this->db->join('staf', 'notifikasi.dari_id = staf.id_staf', 'left');
+
+		return $this->db->get()->result_array();
+	}
+
+	public function join_notifikasi_admin($limit, $offset)
+	{
+		$this->db->select('notifikasi.*, staf.username');
+		$this->db->from('notifikasi');
+		$this->db->where('notifikasi.untuk_id', NULL);
+		$this->db->where('notifikasi.status_notifikasi', 'Sent');
+		$this->db->limit($limit, $offset);
+
+		$this->db->join('staf', 'notifikasi.dari_id = staf.id_staf', 'left');
+
+		return $this->db->get()->result_array();
+	}
+
+	public function join_komentar_penulis_artikel($id)// menampilkan jumlah komentar pada artikel-artikel yang ditulis oleh kontributor di halaman dashboard
+	{
+		$this->db->select('komentar.id_artikel, artikel.id_penulis');
+		$this->db->from('komentar');
+
+		$this->db->join('artikel', 'artikel.id = komentar.id_artikel', 'left');
+
+		$this->db->where('artikel.id_penulis', $id);
 		return $this->db->get();
 	}
 

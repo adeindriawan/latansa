@@ -27,9 +27,19 @@ class Kontributor extends CI_Controller {
 		$this->db->where('artikel.id_penulis', $this->session->userdata('id'));
 		$kontributor['jumlah_artikel'] = $this->db->count_all_results();
 
-		$this->load->view('kontributor/include/nav');
+		$notif['notifikasi'] = $this->M_Home->join_notifikasi_kontributor($this->session->userdata('id'), NULL, NULL);
+
+		$this->db->select('artikel.id');
+		$this->db->from('artikel');
+		$this->db->where('artikel.kategori', 'Blog');
+		$this->db->where('artikel.id_penulis', $this->session->userdata('id'));
+		$dashboard['jumlah_blog'] = $this->db->count_all_results();
+
+		$dashboard['jumlah_komentar'] = $this->M_Home->join_komentar_penulis_artikel($this->session->userdata('id'));
+
+		$this->load->view('kontributor/include/nav', $notif);
 		$this->load->view('kontributor/include/menu', $kontributor);
-		$this->load->view('kontributor/index');
+		$this->load->view('kontributor/index', $dashboard);
 	}
 
 	public function data_blog()
@@ -50,7 +60,9 @@ class Kontributor extends CI_Controller {
 
 		$data['blog'] = $this->db->get();
 
-		$this->load->view('kontributor/include/nav');
+		$notif['notifikasi'] = $this->M_Home->join_notifikasi_kontributor($this->session->userdata('id'), NULL, NULL);
+
+		$this->load->view('kontributor/include/nav', $notif);
 		$this->load->view('kontributor/include/menu', $kontributor);
 		$this->load->view('kontributor/data_blog', $data);
 	}
@@ -98,6 +110,7 @@ class Kontributor extends CI_Controller {
 			          "judul" => $this->input->post('judul', TRUE),
 			          "isi" => $this->input->post('description', TRUE),
 			          "kategori" => "Blog",
+			          "status" => "Pending",
 			          "tanggal" => date("Y-m-d H:i:s"),
 			          "id_penulis" => $this->session->userdata('id'),
 			        );
@@ -112,6 +125,16 @@ class Kontributor extends CI_Controller {
 	                $this->db->insert("tags_artikel", $tags_artikel);
 	                }
 
+	                $notif = array(
+	                	"dari_id" => $this->session->userdata('id'),
+	                	"id_artikel" => $idArtikel,
+	                	"isi_notifikasi" => "Sebuah artikel blog berjudul {$this->input->post('judul')} telah dibuat. Cek bagian pesan atau halaman Data Artikel Blog untuk melihat lebih lanjut. <br><small><em>Klik (x) untuk menutup notifikasi ini.</em></small>",
+	                	"tanggal_notifikasi" => date("Y-m-d H:i:s"),
+	                	"status_notifikasi" => "Sent",
+	                	);
+
+	                $this->db->insert('notifikasi', $notif);
+
 		        $this->load->library('upload');
 
 		        $config['upload_path'] = './images/artikel/original/';
@@ -125,7 +148,7 @@ class Kontributor extends CI_Controller {
 		        $this->upload->initialize($config);
 
 		        if (! $this->upload->do_upload('gambar')) {
-		        	$this->session->set_flashdata('insert_success_no_upload', 'Sukses Menyimpan Artikel Baru! <br/>' . $this->upload->display_errors());
+		        	$this->session->set_flashdata('insert_success_no_upload', 'Sukses Menyimpan Artikel Baru, Silakan Tunggu Persetujuan Admin untuk Artikel Anda! <br/>' . $this->upload->display_errors());
 		        	$this->editor($path, $width);
 		        	redirect('kontributor/new_blog','refresh');
 			        } else {
@@ -225,7 +248,7 @@ class Kontributor extends CI_Controller {
 
 						$this->db->update('artikel', $gambar, array('id' => $idArtikel));
 
-				        $this->session->set_flashdata('success_insert_with_upload', 'Sukses Membuat Artikel dan Gambar Baru!');
+				        $this->session->set_flashdata('success_insert_with_upload', 'Sukses Membuat Artikel dan Gambar Baru, Silakan Tunggu Persetujuan Admin untuk Artikel Anda!');
 				        $this->editor($path, $width);
 				        redirect('kontributor/new_blog','refresh');
 	        	}  
@@ -276,7 +299,6 @@ class Kontributor extends CI_Controller {
 
 			        $this->db->update('artikel', $data, array('id' => $id));
 
-			        $this->db->select('tags_artikel.*');
 			        $this->db->delete('tags_artikel', array("id_artikel" => $id));
 
 			        $tags_artikel['id_artikel'] = $id;
@@ -405,6 +427,37 @@ class Kontributor extends CI_Controller {
 	    } 
 	}
 
+	public function cek_notifikasi()
+	{
+		$session_id = $this->input->post('session_id', TRUE);
+		$id_notifikasi = $this->input->post('id_notifikasi', TRUE);
+
+		if ($this->input->post('ajax') != 1) {
+			redirect('kontributor','refresh');
+		} else {
+			if ($this->input->post('session_id') && !$this->input->post('id_notifikasi')) {
+
+				$query = $this->M_Home->join_notifikasi_kontributor($this->session->userdata('id'), 1, 0);
+				$encode_data = json_encode($query);
+
+				echo $encode_data;
+			} else if ($this->input->post('session_id') && $this->input->post('id_notifikasi')) {
+				$notif = array(
+					"status_notifikasi" => "Read",
+				);
+
+				$this->db->update('notifikasi', $notif, array("id_notifikasi" => $id_notifikasi));
+
+				$query = $this->M_Home->join_notifikasi_kontributor($this->session->userdata('id'), 1, 0);
+				$encode_data = json_encode($query);
+
+				echo $encode_data;
+			} else {
+				echo "false";
+			}
+		}
+	}
+
 	public function profil($id)
 	{
 		$this->db->select('artikel.id');
@@ -418,7 +471,9 @@ class Kontributor extends CI_Controller {
 
 		$data['profil'] = $this->db->get()->result_array();
 
-		$this->load->view('kontributor/include/nav');
+		$notif['notifikasi'] = $this->M_Home->join_notifikasi_kontributor($this->session->userdata('id'), NULL, NULL);
+
+		$this->load->view('kontributor/include/nav', $notif);
 		$this->load->view('kontributor/profil', $data);
 	}
 
@@ -474,6 +529,7 @@ class Kontributor extends CI_Controller {
 						$this->image_lib->initialize($config_thumbnail); 
 						if (! $this->image_lib->resize()) {
 							$this->session->set_flashdata('error_resize_thumbnail', 'Error resize thumbnail:' . $this->image_lib->display_errors());
+							redirect('kontributor/profil/'.$id,'refresh');
 							}
 
 						$config_thumbnail['image_library'] = 'gd2';
@@ -488,6 +544,38 @@ class Kontributor extends CI_Controller {
 						$this->image_lib->initialize($config_thumbnail); 
 						if (! $this->image_lib->crop()) {
 							$this->session->set_flashdata('error_crop_thumbnail', 'Error crop thumbnail:' . $this->image_lib->display_errors());
+							redirect('kontributor/profil/'.$id,'refresh');
+							}
+
+						/* resize and crop avatar */
+			        	$config_avatar['image_library'] = 'gd2';
+						$config_avatar['source_image'] = $uploaddata['full_path'];
+						$config_avatar['new_image'] = './images/profil/avatar/' . $uploaddata['file_name'];
+						$config_avatar['maintain_ratio'] = TRUE;
+						$config_avatar['width'] = '32';
+						$config_avatar['height'] = '32';
+						$dim = (intval($uploaddata["image_width"]) / intval($uploaddata["image_height"])) - ($config_avatar['width'] / $config_avatar['height']);
+						$config_avatar['master_dim'] = ($dim > 0)? "height" : "width";
+
+						$this->image_lib->initialize($config_avatar); 
+						if (! $this->image_lib->resize()) {
+							$this->session->set_flashdata('error_resize_avatar', 'Error resize avatar:' . $this->image_lib->display_errors());
+							redirect('kontributor/profil/'.$id,'refresh');
+							}
+
+						$config_avatar['image_library'] = 'gd2';
+						$config_avatar['source_image'] = './images/profil/avatar/' . $uploaddata['file_name'];
+						$config_avatar['new_image'] = './images/profil/avatar/' . $uploaddata['file_name'];
+						$config_avatar['maintain_ratio'] = FALSE;
+						$config_avatar['width'] = '32';
+						$config_avatar['height'] = '32';
+						$config_avatar['x_axis'] = '0';
+						$config_avatar['y_axis'] = '0';
+
+						$this->image_lib->initialize($config_avatar); 
+						if (! $this->image_lib->crop()) {
+							$this->session->set_flashdata('error_crop_avatar', 'Error crop avatar:' . $this->image_lib->display_errors());
+							redirect('kontributor/profil/'.$id,'refresh');
 							}
 
 						/* resize and crop gambar */
@@ -503,7 +591,9 @@ class Kontributor extends CI_Controller {
 						$this->image_lib->initialize($config_gambar); 
 						if (! $this->image_lib->resize()) {
 							$this->session->set_flashdata('error_resize_gambar', 'Error resize gambar:' . $this->image_lib->display_errors());
+							redirect('kontributor/profil/'.$id,'refresh');
 							}
+
 						$config_gambar['image_library'] = 'gd2';
 						$config_gambar['source_image'] = './images/profil/halaman/' . $uploaddata['file_name'];
 						$config_gambar['new_image'] = './images/profil/halaman/' . $uploaddata['file_name'];
@@ -517,6 +607,7 @@ class Kontributor extends CI_Controller {
 						$this->image_lib->initialize($config_gambar); 
 						if (! $this->image_lib->crop()) {
 							$this->session->set_flashdata('error_crop_gambar', 'Error crop gambar:' . $this->image_lib->display_errors());
+							redirect('kontributor/profil/'.$id,'refresh');
 							}
 
 						$gambar = array(

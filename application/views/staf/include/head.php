@@ -11,8 +11,8 @@
         Staf | Data Artikel
     <?php } elseif ($this->uri->segment(1) == "staf" && $this->uri->segment(2) == "data_halaman") { ?>
         Staf | Data Halaman
-    <?php } elseif ($this->uri->segment(1) == "staf" && $this->uri->segment(2) == "new_blog") { ?>
-        Staf | Buat Blog
+    <?php } elseif ($this->uri->segment(1) == "staf" && $this->uri->segment(2) == "data_blog") { ?>
+        Staf | Data Blog
     <?php } elseif ($this->uri->segment(1) == "staf" && $this->uri->segment(2) == "profil") { ?>
         Staf | Profil
     <?php } elseif ($this->uri->segment(1) == "staf" && $this->uri->segment(2) == "data_galeri") { ?>
@@ -41,6 +41,7 @@
     <link rel="stylesheet" href="<?php echo base_url() ?>assets/bcore/assets/plugins/tagsinput/jquery.tagsinput.css" />
     <link rel="stylesheet" href="<?php echo base_url() ?>assets/bcore/assets/plugins/daterangepicker/daterangepicker-bs3.css" />
     <link rel="stylesheet" href="<?php echo base_url() ?>assets/bcore/assets/plugins/timepicker/css/bootstrap-timepicker.min.css" />
+    <link href="<?php echo base_url() ?>assets/bcore/assets/plugins/gritter/css/jquery.gritter.css" rel="stylesheet" />
     <!--END GLOBAL STYLES -->
 
     <!-- PAGE LEVEL STYLES -->
@@ -77,6 +78,7 @@
     <script src="<?php echo base_url() ?>assets/bcore/assets/plugins/autosize/jquery.autosize.min.js"></script>
     <script src="<?php echo base_url() ?>assets/plugins/jasny/js/bootstrap-fileupload.js"></script>
     <script src="<?php echo base_url() ?>assets/bcore/assets/js/formsInit.js"></script>
+    <script src="<?php echo base_url() ?>assets/bcore/assets/plugins/gritter/js/jquery.gritter.js"></script>
     <script src="<?php echo base_url() ?>js/bootstrap-table.js"></script>
         <script>
             $(function () { formInit(); });

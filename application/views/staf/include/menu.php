@@ -38,8 +38,15 @@
     <li class="panel <?php if ($this->uri->segment(1) == 'staf' && $this->uri->segment(2) == 'data_artikel') { ?>
       active
     <?php } ?>">
-        <a href="<?php echo base_url() ?>staf/data_artikel"><i class="fa fa-newspaper-o"> </i> Artikel     
+        <a href="<?php echo base_url() ?>staf/data_artikel"><i class="fa fa-newspaper-o"> </i> Artikel Berita    
            &nbsp; <span class="label label-default"><?php echo $jumlah_artikel ?></span>&nbsp;
+        </a>
+    </li>
+    <li class="panel <?php if ($this->uri->segment(1) == 'staf' && $this->uri->segment(2) == 'data_blog') { ?>
+      active
+    <?php } ?>">
+        <a href="<?php echo base_url() ?>staf/data_blog"><i class="fa fa-book"> </i> Artikel Blog    
+           &nbsp; <span class="label label-default"><?php echo $jumlah_blog ?></span>&nbsp;
         </a>
     </li>
     <li class="panel <?php if ($this->uri->segment(1) == 'staf' && $this->uri->segment(2) == 'data_galeri') { ?>

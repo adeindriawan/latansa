@@ -14,57 +14,41 @@
       <!-- MESSAGES SECTION -->
       <li class="dropdown">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            <span class="label label-success">2</span>    <i class="fa fa-envelope"></i>&nbsp; <i class="fa fa-chevron-down"></i>
+            <span class="label label-success"><?php echo count($notifikasi); ?></span>    <i class="fa fa-envelope"></i>&nbsp; <i class="fa fa-chevron-down"></i>
         </a>
           <ul class="dropdown-menu dropdown-messages">
-            <li>
-              <a href="#">
-                <div>
-                   <strong>John Smith</strong>
-                    <span class="pull-right text-muted">
-                        <em>Today</em>
-                    </span>
-                </div>
-                <div>Lorem ipsum dolor sit amet, consectetur adipiscing.
-                    <br />
-                    <span class="label label-primary">Important</span> 
-                </div>
-              </a>
-            </li>
-            <li class="divider"></li>
-            <li>
-              <a href="#">
+            <?php if (count($notifikasi) == 0) { ?>
+              <li>
+                <a href="#">
                   <div>
-                      <strong>Raphel Jonson</strong>
-                      <span class="pull-right text-muted">
-                          <em>Yesterday</em>
-                      </span>
+                     <strong>Tidak ada notifikasi</strong>
                   </div>
-                  <div>Lorem ipsum dolor sit amet, consectetur adipiscing.
-                       <br />
-                      <span class="label label-success"> Moderate </span> 
-                  </div>
-              </a>
-            </li>
-            <li class="divider"></li>
-            <li>
-              <a href="#">
-                  <div>
-                      <strong>Chi Ley Suk</strong>
-                      <span class="pull-right text-muted">
-                          <em>26 Jan 2014</em>
-                      </span>
-                  </div>
-                  <div>Lorem ipsum dolor sit amet, consectetur adipiscing.
-                       <br />
-                      <span class="label label-danger"> Low </span> 
-                  </div>
-              </a>
-            </li>
+                  <div>Tidak ada notifikasi baru saat ini.</div>
+                </a>
+              </li>
+            <?php } else { ?>
+              <?php foreach ($notifikasi as $value) { ?>
+                <li>
+                  <a href="#">
+                    <div>
+                       <strong><?php if ($value['username'] == NULL) {
+                         echo "(User tidak log in)";
+                       } else {
+                         echo $value['username'];
+                       } ?></strong>
+                        <span class="pull-right text-muted">
+                            <em><?php echo $value['tanggal_notifikasi']; ?></em>
+                        </span>
+                    </div>
+                    <div><?php echo $value['isi_notifikasi']; ?></div>
+                  </a>
+                </li>
+              <?php } ?>
+            <?php } ?>
             <li class="divider"></li>
             <li>
                 <a class="text-center" href="#">
-                    <strong>Read All Messages</strong>
+                    <strong>Lihat semua notifikasi</strong>
                     <i class="icon-angle-right"></i>
                 </a>
             </li>

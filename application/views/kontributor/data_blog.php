@@ -13,6 +13,7 @@
 									<tr>
 										<th>Judul Artikel</th>
 										<th>Tanggal</th>
+										<th>Status</th>
 										<th>Detail</th>
 										<th>Edit</th>
 										<th>Hapus</th>
@@ -28,6 +29,11 @@
 											<tr>
 												<td style="color:#000;"><?php echo $value['judul'] ?></td>
 												<td style="color:#000;"><?php echo $value['tanggal'] ?></td>
+												<td style="color:#000;"><?php if ($value['status'] == "Pending") { ?>
+													<span class="label label-danger"><?php echo $value['status'] ?></span>
+												<?php } else { ?>
+													<span class="label label-success"><?php echo $value['status'] ?></span>
+												<?php } ?>
 												<td>
 												<a href="<?php echo site_url("home/artikel/".$value['id']) ?>" class="btn btn-success">
 													<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> 

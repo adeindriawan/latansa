@@ -25,7 +25,7 @@
             </div>
             <h4>Isi Artikel</h4>
             <?php echo $this->ckeditor->editor('description',@$default_value);?><?php echo form_error('description','<p class="error">'); ?>
-            <br><input type="submit" name="submit" value="Save & Publish" id="save" class="save btn btn-primary" /> <a class="btn btn-info" href="<?php echo base_url('kontributor') ?>">Back To Contributor Page</a>
+            <br><input type="submit" name="submit" value="Save" id="save" class="save btn btn-primary" /> <a class="btn btn-default" href="<?php echo base_url('kontributor/data_blog') ?>">Back To Blog Data</a> <a class="btn btn-info" href="<?php echo base_url('kontributor') ?>">Back To Contributor Page</a>
             <p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds</p>
         </div>
         <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">

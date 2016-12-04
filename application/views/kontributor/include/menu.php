@@ -31,7 +31,7 @@
     <li class="panel <?php if ($this->uri->segment(1) == 'kontributor' && $this->uri->segment(2) == 'data_blog') { ?>
       active
     <?php } ?>">
-        <a href="<?php echo base_url() ?>kontributor/data_blog"><i class="fa fa-newspaper-o"> </i> Artikel     
+        <a href="<?php echo base_url() ?>kontributor/data_blog"><i class="fa fa-newspaper-o"> </i> Artikel Blog
            &nbsp; <span class="label label-default"><?php echo $jumlah_artikel ?></span>&nbsp;
         </a>
     </li>

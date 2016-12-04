@@ -31,6 +31,12 @@ class Staf extends CI_Controller {
 		$this->db->where('artikel.kategori', 'Berita');
 		$staf['jumlah_artikel'] = $this->db->count_all_results();
 
+		$this->db->select('artikel.id');
+		$this->db->from('artikel');
+		$this->db->where('artikel.kategori', 'Blog');
+		$this->db->where('artikel.status', 'Pending');
+		$staf['jumlah_blog'] = $this->db->count_all_results();
+
 		$this->db->select('galeri.id_galeri');
 		$this->db->from('galeri');
 		$staf['jumlah_galeri'] = $this->db->count_all_results();
@@ -38,12 +44,26 @@ class Staf extends CI_Controller {
 		$this->db->select('staf.*');
 		$this->db->from('staf');
 		$this->db->where('id_staf', $this->session->userdata('id'));
-
 		$staf['profil'] = $this->db->get()->result_array();
 
-		$this->load->view('staf/include/nav');
+		$notif['notifikasi'] = $this->M_Home->join_notifikasi_admin(NULL, NULL);
+
+		$this->db->select('artikel.id');
+		$this->db->from('artikel');
+		$this->db->where('artikel.kategori', 'Berita');
+		$dashboard['jumlah_berita'] = $this->db->count_all_results();
+
+		$this->db->select('artikel.id');
+		$this->db->from('artikel');
+		$this->db->where('artikel.kategori', 'Blog');
+		$this->db->where('artikel.status', 'Published');
+		$dashboard['jumlah_blog'] = $this->db->count_all_results();
+
+		$dashboard['jumlah_komentar'] = $this->M_Home->join_komentar_penulis_artikel($this->session->userdata('id'));
+
+		$this->load->view('staf/include/nav', $notif);
 		$this->load->view('staf/include/menu', $staf);
-		$this->load->view('staf/index');
+		$this->load->view('staf/index', $dashboard);
 	}
 
 	public function data_artikel()
@@ -62,13 +82,21 @@ class Staf extends CI_Controller {
 		$this->db->where('artikel.kategori', 'Berita');
 		$staf['jumlah_artikel'] = $this->db->count_all_results();
 
+		$this->db->select('artikel.id');
+		$this->db->from('artikel');
+		$this->db->where('artikel.kategori', 'Blog');
+		$this->db->where('artikel.status', 'Pending');
+		$staf['jumlah_blog'] = $this->db->count_all_results();
+
 		$this->db->select('galeri.id_galeri');
 		$this->db->from('galeri');
 		$staf['jumlah_galeri'] = $this->db->count_all_results();
 
 		$data['artikel'] = $this->M_Home->join_artikel_admin();
 
-		$this->load->view('staf/include/nav');
+		$notif['notifikasi'] = $this->M_Home->join_notifikasi_admin(NULL, NULL);
+
+		$this->load->view('staf/include/nav', $notif);
 		$this->load->view('staf/include/menu', $staf);
 		$this->load->view('staf/data_artikel', $data);
 	}
@@ -89,6 +117,12 @@ class Staf extends CI_Controller {
 		$this->db->where('artikel.kategori', 'Berita');
 		$staf['jumlah_artikel'] = $this->db->count_all_results();
 
+		$this->db->select('artikel.id');
+		$this->db->from('artikel');
+		$this->db->where('artikel.kategori', 'Blog');
+		$this->db->where('artikel.status', 'Pending');
+		$staf['jumlah_blog'] = $this->db->count_all_results();
+
 		$this->db->select('galeri.id_galeri');
 		$this->db->from('galeri');
 		$staf['jumlah_galeri'] = $this->db->count_all_results();
@@ -97,9 +131,51 @@ class Staf extends CI_Controller {
 		$this->db->from('halaman');
 		$data['halaman'] = $this->db->get();
 
-		$this->load->view('staf/include/nav');
+		$notif['notifikasi'] = $this->M_Home->join_notifikasi_admin(NULL, NULL);
+
+		$this->load->view('staf/include/nav', $notif);
 		$this->load->view('staf/include/menu', $staf);
 		$this->load->view('staf/data_halaman', $data);
+	}
+
+	public function data_blog()
+	{
+		$this->db->select('staf.*');
+		$this->db->from('staf');
+		$this->db->where('staf.id_staf', $this->session->userdata('id'));
+		$staf['profil'] = $this->db->get()->result_array();
+
+		$this->db->select('halaman.id_halaman');
+		$this->db->from('halaman');
+		$staf['jumlah_halaman'] = $this->db->count_all_results();
+
+		$this->db->select('artikel.id');
+		$this->db->from('artikel');
+		$this->db->where('artikel.kategori', 'Berita');
+		$staf['jumlah_artikel'] = $this->db->count_all_results();
+
+		$this->db->select('artikel.id');
+		$this->db->from('artikel');
+		$this->db->where('artikel.kategori', 'Blog');
+		$this->db->where('artikel.status', 'Pending');
+		$staf['jumlah_blog'] = $this->db->count_all_results();
+
+		$this->db->select('galeri.id_galeri');
+		$this->db->from('galeri');
+		$staf['jumlah_galeri'] = $this->db->count_all_results();
+
+		$this->db->select('artikel.*');
+		$this->db->from('artikel');
+		$this->db->where('artikel.kategori', 'Blog');
+		$this->db->where('artikel.status', 'Pending');
+
+		$data['blog'] = $this->db->get();
+
+		$notif['notifikasi'] = $this->M_Home->join_notifikasi_admin(NULL, NULL);
+
+		$this->load->view('staf/include/nav', $notif);
+		$this->load->view('staf/include/menu', $staf);
+		$this->load->view('staf/data_blog', $data);
 	}
 
 	public function edit_halaman($id)
@@ -265,6 +341,7 @@ class Staf extends CI_Controller {
 			          "isi" => $this->input->post('description', TRUE),
 			          "kategori" => "Berita",
 			          "tanggal" => date("Y-m-d H:i:s"),
+			          "status" => "Published",
 			          "id_penulis" => $this->session->userdata('id'),
 			        );
 
@@ -436,8 +513,6 @@ class Staf extends CI_Controller {
 		        $data = array(
 			          "judul" => $this->input->post('judul', TRUE),
 			          "isi" => $this->input->post('description', TRUE),
-			          "tanggal" => date("Y-m-d H:i:s"),
-			          "id_penulis" => $this->session->userdata('id'),
 			        );
 
 			        $this->db->update('artikel', $data, array('id' => $id));
@@ -571,6 +646,196 @@ class Staf extends CI_Controller {
 	    } 
 	}
 
+	public function publish_blog($id)
+	{
+		$path = '../js/ckfinder';
+    	$width = '860px';
+    	$this->db->select('artikel.*');
+    	$this->db->from('artikel');
+    	$this->db->where('artikel.id', $id);
+
+    	$data['artikel'] = $this->db->get()->result_array();
+
+    	$query = $this->M_Home->join_artikel_tags($id)->result_array();
+    	foreach ($query as $value) {
+    		$query1[] = $value['tags'];
+    	}
+    	$data['tags_artikel'] = $query1;
+
+    	$data['tags'] = $this->db->get('tags');
+    	$this->editor($path, $width);
+    	$this->load->view('staf/publish_blog', $data);
+	}
+
+	public function publish($id)
+	{
+		$path = '../js/ckfinder';
+    	$width = '860px';
+		if ($this->input->post('description', TRUE)) {
+	      	$this->form_validation->set_rules('description', 'Isi Artikel', 'trim|required|xss_clean');
+	      	$this->form_validation->set_rules('judul', 'Judul Artikel', 'trim|required|xss_clean');
+	      	$this->form_validation->set_rules('tags[]', 'Tags Artikel', 'required');
+	        if ($this->form_validation->run() == FALSE) {
+	          	$this->session->set_flashdata('error_form_validation', 'Error Form Validation!');
+	          	$this->editor($path, $width);
+	          	redirect('staf/new_post','refresh');
+	        	} else {
+		        $data = array(
+			          "judul" => $this->input->post('judul', TRUE),
+			          "isi" => $this->input->post('description', TRUE),
+			          "status" => "Published",
+			        );
+
+		        $this->db->update('artikel', $data, array('id' => $id));
+
+		        $this->db->delete('tags_artikel', array("id_artikel" => $id));
+
+		        $tags_artikel['id_artikel'] = $id;
+                foreach ($_POST['tags'] as $selected) {
+                $tags_artikel['id_tags'] = $selected;
+                $this->db->insert("tags_artikel", $tags_artikel);
+                }
+
+                $query = $this->db->get_where('artikel', array("id" => $id))->result_array();
+                $id_penulis = $query[0]['id_penulis'];
+
+                $notif = array(
+                	"dari_id" => $this->session->userdata('id'),
+                	"untuk_id" => $id_penulis,
+                	"id_artikel" => $id,
+                	"isi_notifikasi" => "Artikel Anda yang berjudul {$query[0]['judul']} sudah dipublikasikan. Cek bagian pesan atau halaman Data Artikel Blog melihat lebih lanjut. <br><small><em>Klik (x) untuk menutup notifikasi ini.</em></small>",
+                	"tanggal_notifikasi" => date("Y-m-d H:i:s"),
+                	"status_notifikasi" => "Sent",
+                	);
+
+                $this->db->insert('notifikasi', $notif);
+
+		        $this->load->library('upload');
+
+		        $config['upload_path'] = './images/artikel/original/';
+		        $config['file_name'] = str_replace(" ", "_", $this->input->post('judul')) . "_" . $this->session->userdata('username') . '.jpg';
+		        $config['overwrite'] = TRUE;
+		        $config['allowed_types'] = 'gif|jpg|jpeg|png';
+		        $config['max_size'] = '2000';
+		        $config['max_width'] = '2500';
+		        $config['max_height'] = '2500';
+
+		        $this->upload->initialize($config);
+
+		        if (! $this->upload->do_upload('gambar')) {
+		        	$this->session->set_flashdata('success_no_upload', "Sukses Mengedit/Mempublikasikan Artikel! <br/>" . $this->upload->display_errors());
+		        	redirect('staf/publish_blog/'.$id,'refresh');
+			        } else {
+			        	$uploaddata = $this->upload->data();
+						$this->load->library('image_lib');
+
+						/* resize and crop thumbnail */
+			        	$config_thumbnail['image_library'] = 'gd2';
+						$config_thumbnail['source_image'] = $uploaddata['full_path'];
+						$config_thumbnail['new_image'] = './images/artikel/thumbnail/' . $uploaddata['file_name'];
+						$config_thumbnail['maintain_ratio'] = TRUE;
+						$config_thumbnail['width'] = '120';
+						$config_thumbnail['height'] = '120';
+						$dim = (intval($uploaddata["image_width"]) / intval($uploaddata["image_height"])) - ($config_thumbnail['width'] / $config_thumbnail['height']);
+						$config_thumbnail['master_dim'] = ($dim > 0)? "height" : "width";
+
+						$this->image_lib->initialize($config_thumbnail); 
+						if (! $this->image_lib->resize()) {
+							$this->session->set_flashdata('error_resize_thumbnail', 'Error resize thumbnail:' . $this->image_lib->display_errors());
+							redirect('staf/publish_blog/'.$id,'refresh');
+							}
+
+						$config_thumbnail['image_library'] = 'gd2';
+						$config_thumbnail['source_image'] = './images/artikel/thumbnail/' . $uploaddata['file_name'];
+						$config_thumbnail['new_image'] = './images/artikel/thumbnail/' . $uploaddata['file_name'];
+						$config_thumbnail['maintain_ratio'] = FALSE;
+						$config_thumbnail['width'] = '120';
+						$config_thumbnail['height'] = '120';
+						$config_thumbnail['x_axis'] = '0';
+						$config_thumbnail['y_axis'] = '0';
+
+						$this->image_lib->initialize($config_thumbnail); 
+						if (! $this->image_lib->crop()) {
+							$this->session->set_flashdata('error_crop_thumbnail', 'Error crop thumbnail:' . $this->image_lib->display_errors());
+							redirect('staf/publish_blog/'.$id,'refresh');
+							}
+
+						/* resize and crop gambar */
+						$config_gambar['image_library'] = 'gd2';
+						$config_gambar['source_image'] = $uploaddata['full_path'];
+						$config_gambar['new_image'] = './images/artikel/gambar/' . $uploaddata['file_name'];
+						$config_gambar['maintain_ratio'] = TRUE;
+						$config_gambar['width'] = '1000';
+						$config_gambar['height'] = '415';
+						$dim = (intval($uploaddata["image_width"]) / intval($uploaddata["image_height"])) - ($config_gambar['width'] / $config_gambar['height']);
+						$config_gambar['master_dim'] = ($dim > 0)? "height" : "width";
+
+						$this->image_lib->initialize($config_gambar); 
+						if (! $this->image_lib->resize()) {
+							$this->session->set_flashdata('error_resize_gambar', 'Error resize gambar:' . $this->image_lib->display_errors());
+							redirect('staf/publish_blog/'.$id,'refresh');
+							}
+						$config_gambar['image_library'] = 'gd2';
+						$config_gambar['source_image'] = './images/artikel/gambar/' . $uploaddata['file_name'];
+						$config_gambar['new_image'] = './images/artikel/gambar/' . $uploaddata['file_name'];
+						$config_gambar['maintain_ratio'] = FALSE;
+						$config_gambar['width'] = '1000';
+						$config_gambar['height'] = '415';
+						$config_gambar['x_axis'] = '0';
+						$config_gambar['y_axis'] = '0';
+
+						$this->image_lib->clear();
+						$this->image_lib->initialize($config_gambar); 
+						if (! $this->image_lib->crop()) {
+							$this->session->set_flashdata('error_crop_gambar', 'Error crop gambar:' . $this->image_lib->display_errors());
+							redirect('staf/publish_blog/'.$id,'refresh');
+							}
+
+						/* resize and crop list */
+						$config_list['image_library'] = 'gd2';
+						$config_list['source_image'] = $uploaddata['full_path'];
+						$config_list['new_image'] = './images/artikel/list/' . $uploaddata['file_name'];
+						$config_list['maintain_ratio'] = TRUE;
+						$config_list['width'] = '460';
+						$config_list['height'] = '200';
+						$dim = (intval($uploaddata["image_width"]) / intval($uploaddata["image_height"])) - ($config_list['width'] / $config_list['height']);
+						$config_list['master_dim'] = ($dim > 0)? "height" : "width";
+
+						$this->image_lib->initialize($config_list); 
+						if (! $this->image_lib->resize()) {
+							$this->session->set_flashdata('error_resize_list', 'Error resize list:' . $this->image_lib->display_errors());
+							redirect('staf/publish_blog/'.$id,'refresh');
+							}
+						$config_list['image_library'] = 'gd2';
+						$config_list['source_image'] = './images/artikel/list/' . $uploaddata['file_name'];
+						$config_list['new_image'] = './images/artikel/list/' . $uploaddata['file_name'];
+						$config_list['maintain_ratio'] = FALSE;
+						$config_list['width'] = '460';
+						$config_list['height'] = '200';
+						$config_list['x_axis'] = '0';
+						$config_list['y_axis'] = '0';
+
+						$this->image_lib->clear();
+						$this->image_lib->initialize($config_list); 
+						if (! $this->image_lib->crop()) {
+							$this->session->set_flashdata('error_crop_list', 'Error crop list:' . $this->image_lib->display_errors());
+							redirect('staf/publish_blog/'.$id,'refresh');
+							}
+
+						$gambar = array(
+							"gambar" => str_replace(" ", "_", $this->input->post('judul')) . "_" . $this->session->userdata('username') . '.jpg',
+						);
+
+						$this->db->update('artikel', $gambar, array("id" => $id));
+
+						$this->session->set_flashdata('success_with_upload', 'Sukses Mengedit/Mempublikasikan Artikel Beserta Gambarnya!');
+				        $this->editor($path, $width);
+				        redirect('staf/publish_blog/'.$id,'refresh');
+	        	}  
+	        }
+	    } 
+	}
+
 	public function data_galeri()
 	{
 		$this->db->select('staf.*');
@@ -587,13 +852,21 @@ class Staf extends CI_Controller {
 		$this->db->where('artikel.kategori', 'Berita');
 		$staf['jumlah_artikel'] = $this->db->count_all_results();
 
+		$this->db->select('artikel.id');
+		$this->db->from('artikel');
+		$this->db->where('artikel.kategori', 'Blog');
+		$this->db->where('artikel.status', 'Pending');
+		$staf['jumlah_blog'] = $this->db->count_all_results();
+
 		$this->db->select('galeri.id_galeri');
 		$this->db->from('galeri');
 		$staf['jumlah_galeri'] = $this->db->count_all_results();
 
 		$data['galeri'] = $this->M_Home->join_galeri_staf();
 
-		$this->load->view('staf/include/nav');
+		$notif['notifikasi'] = $this->M_Home->join_notifikasi_admin(NULL, NULL);
+
+		$this->load->view('staf/include/nav', $notif);
 		$this->load->view('staf/include/menu', $staf);
 		$this->load->view('staf/data_galeri', $data);
 
@@ -731,6 +1004,38 @@ class Staf extends CI_Controller {
 	    } // end if this->input->post description
 	}
 
+	public function cek_notifikasi()
+	{
+		$session_id = $this->input->post('session_id', TRUE);
+		$id_notifikasi = $this->input->post('id_notifikasi', TRUE);
+
+		if ($this->input->post('ajax') != 1) {
+			redirect('kontributor','refresh');
+		} else {
+			if ($this->input->post('session_id') && !$this->input->post('id_notifikasi')) {
+
+				$query = $this->M_Home->join_notifikasi_admin(1, 0);
+				$encode_data = json_encode($query);
+
+				echo $encode_data;
+			} else if ($this->input->post('session_id') && $this->input->post('id_notifikasi')) {
+				$notif = array(
+					"status_notifikasi" => "Read",
+					"untuk_id" => $this->session->userdata('id'),
+				);
+
+				$this->db->update('notifikasi', $notif, array("id_notifikasi" => $id_notifikasi));
+
+				$query = $this->M_Home->join_notifikasi_admin(1, 0);
+				$encode_data = json_encode($query);
+
+				echo $encode_data;
+			} else {
+				echo "false";
+			}
+		}
+	}
+
 	public function profil($id)
 	{
 		$this->db->select('staf.*');
@@ -747,6 +1052,12 @@ class Staf extends CI_Controller {
 		$this->db->where('artikel.kategori', 'Berita');
 		$data['jumlah_artikel'] = $this->db->count_all_results();
 
+		$this->db->select('artikel.id');
+		$this->db->from('artikel');
+		$this->db->where('artikel.kategori', 'Blog');
+		$this->db->where('artikel.status', 'Pending');
+		$data['jumlah_blog'] = $this->db->count_all_results();
+
 		$this->db->select('galeri.id_galeri');
 		$this->db->from('galeri');
 		$data['jumlah_galeri'] = $this->db->count_all_results();
@@ -757,7 +1068,9 @@ class Staf extends CI_Controller {
 
 		$data['profil'] = $this->db->get()->result_array();
 
-		$this->load->view('staf/include/nav');
+		$notif['notifikasi'] = $this->M_Home->join_notifikasi_admin(NULL, NULL);
+
+		$this->load->view('staf/include/nav', $notif);
 		$this->load->view('staf/profil', $data);
 	}
 
@@ -813,6 +1126,7 @@ class Staf extends CI_Controller {
 						$this->image_lib->initialize($config_thumbnail); 
 						if (! $this->image_lib->resize()) {
 							$this->session->set_flashdata('error_resize_thumbnail', 'Error resize thumbnail:' . $this->image_lib->display_errors());
+							redirect('staf/profil/'.$id,'refresh');
 							}
 
 						$config_thumbnail['image_library'] = 'gd2';
@@ -827,6 +1141,38 @@ class Staf extends CI_Controller {
 						$this->image_lib->initialize($config_thumbnail); 
 						if (! $this->image_lib->crop()) {
 							$this->session->set_flashdata('error_crop_thumbnail', 'Error crop thumbnail:' . $this->image_lib->display_errors());
+							redirect('staf/profil/'.$id,'refresh');
+							}
+
+						/* resize and crop avatar */
+			        	$config_avatar['image_library'] = 'gd2';
+						$config_avatar['source_image'] = $uploaddata['full_path'];
+						$config_avatar['new_image'] = './images/profil/avatar/' . $uploaddata['file_name'];
+						$config_avatar['maintain_ratio'] = TRUE;
+						$config_avatar['width'] = '32';
+						$config_avatar['height'] = '32';
+						$dim = (intval($uploaddata["image_width"]) / intval($uploaddata["image_height"])) - ($config_avatar['width'] / $config_avatar['height']);
+						$config_avatar['master_dim'] = ($dim > 0)? "height" : "width";
+
+						$this->image_lib->initialize($config_avatar); 
+						if (! $this->image_lib->resize()) {
+							$this->session->set_flashdata('error_resize_avatar', 'Error resize avatar:' . $this->image_lib->display_errors());
+							redirect('staf/profil/'.$id,'refresh');
+							}
+
+						$config_avatar['image_library'] = 'gd2';
+						$config_avatar['source_image'] = './images/profil/avatar/' . $uploaddata['file_name'];
+						$config_avatar['new_image'] = './images/profil/avatar/' . $uploaddata['file_name'];
+						$config_avatar['maintain_ratio'] = FALSE;
+						$config_avatar['width'] = '32';
+						$config_avatar['height'] = '32';
+						$config_avatar['x_axis'] = '0';
+						$config_avatar['y_axis'] = '0';
+
+						$this->image_lib->initialize($config_avatar); 
+						if (! $this->image_lib->crop()) {
+							$this->session->set_flashdata('error_crop_avatar', 'Error crop avatar:' . $this->image_lib->display_errors());
+							redirect('staf/profil/'.$id,'refresh');
 							}
 
 						/* resize and crop gambar */
@@ -842,6 +1188,7 @@ class Staf extends CI_Controller {
 						$this->image_lib->initialize($config_gambar); 
 						if (! $this->image_lib->resize()) {
 							$this->session->set_flashdata('error_resize_gambar', 'Error resize gambar:' . $this->image_lib->display_errors());
+							redirect('staf/profil/'.$id,'refresh');
 							}
 						$config_gambar['image_library'] = 'gd2';
 						$config_gambar['source_image'] = './images/profil/halaman/' . $uploaddata['file_name'];
@@ -856,6 +1203,7 @@ class Staf extends CI_Controller {
 						$this->image_lib->initialize($config_gambar); 
 						if (! $this->image_lib->crop()) {
 							$this->session->set_flashdata('error_crop_gambar', 'Error crop gambar:' . $this->image_lib->display_errors());
+							redirect('staf/profil/'.$id,'refresh');
 							}
 
 						$gambar = array(

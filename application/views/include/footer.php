@@ -46,7 +46,7 @@
   <div id="copyright" class="clear"> 
     <!-- ################################################################################################ -->
     <p class="fl_left">Copyright &copy; <?php echo date('Y') ?> - All Rights Reserved - <a href="<?php echo base_url() ?>">Pondok Pesantren La Tansa</a></p>
-    <p class="fl_right">Developed by <a target="_blank" href="http://www.chronica.id/" title="Free Website Templates">Ade Indriawan</a></p>
+    <p class="fl_right">Developed by <a target="_blank" href="http://www.chronica.id/" title="Free Website Templates">Chronica Development &amp; Design</a></p>
     <!-- ################################################################################################ --> 
   </div>
 </div>

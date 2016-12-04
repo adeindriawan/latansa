@@ -18,9 +18,9 @@
                 <div class="col-lg-12">
                   <div style="text-align: center;">
                     <a class="quick-btn" href="#">
-                        <i class="fa fa-eye fa-2x"></i>
+                        <i class="fa fa-book fa-2x"></i>
                         <span>Blog</span>
-                        <span class="label label-success">456</span>
+                        <span class="label label-success"><?php echo $jumlah_blog ?></span>
                     </a>
                     <a class="quick-btn" href="#">
                         <i class="fa fa-commenting-o fa-2x"></i>
@@ -30,7 +30,7 @@
                     <a class="quick-btn" href="#">
                         <i class="fa fa-comments fa-2x"></i>
                         <span>Komentar</span>
-                        <span class="label label-default">20</span>
+                        <span class="label label-default"><?php echo $jumlah_komentar->num_rows() ?></span>
                     </a> 
                   </div>
                 </div>
@@ -232,5 +232,85 @@
         <p>&copy;  Copyrights - &nbsp;<?php echo date('Y') ?> &nbsp;Developed by <a href="http://chronica.id">Ade Indriawan</a></p>
       </div>
       <!--END FOOTER -->
+      <script type="text/javascript">
+        $(document).ready(function() {
+          var link = "<?php echo base_url() ?>";
+          var session_id = "<?php echo $this->session->userdata('id') ?>";
+          function cek_notifikasi_lagi (id) {
+            $.post(link + 'kontributor/cek_notifikasi', {id_notifikasi: id, session_id: session_id, ajax: 1}, function(data, textStatus, xhr) {
+              /*optional stuff to do after success */
+              if (data == "false") {
+                $.gritter.add({
+                  title: "Notifikasi",
+                  text: "Tidak ada notifikasi baru!",
+                  sticky: false,
+                });
+              } else {
+                response = $.parseJSON(data);
+                if (response.length == 0) {
+                  $.gritter.add({
+                    title: "Notifikasi",
+                    text: "Tidak ada notifikasi baru!",
+                    sticky: false,
+                  });
+                } else {
+                  $(function(){
+                    $.each(response, function(index, val) {
+                       /* iterate through array or object */
+                       if (val.username == null) { val.username = "(User tidak log in)"} else{val.username};
+                       $.gritter.add({
+                        title: "Notifikasi",
+                        text: "Dari : " + val.username + "<br>" +
+                              "Isi : " + val.isi_notifikasi + "<br>" +
+                              "Tanggal : " + val.tanggal_notifikasi,
+                        sticky: true,
+                        after_close: function() {
+                          cek_notifikasi_lagi(val.id_notifikasi);
+                        }
+                      });
+                    });
+                  });
+                };
+              };
+            });
+          } // end function cek_notifikasi_lagi
+          $.post(link + 'kontributor/cek_notifikasi', {session_id: session_id, ajax: 1}, function(data) {
+            /*optional stuff to do after success */
+            if (data == "false") {
+              $.gritter.add({
+                title: "Notifikasi",
+                text: "Tidak ada notifikasi baru!",
+                sticky: false,
+              });
+            } else {
+              response = $.parseJSON(data);
+              if (response.length == 0) {
+                $.gritter.add({
+                    title: "Notifikasi",
+                    text: "Tidak ada notifikasi baru!",
+                    sticky: false,
+                  });
+              } else {
+                $(function(){
+                  $.each(response, function(index, val) {
+                     /* iterate through array or object */
+                     if (val.username == null) { val.username = "(User tidak log in)"} else{val.username};
+                     $.gritter.add({
+                      title: "Notifikasi",
+                      text: "Dari : " + val.username + "<br>" +
+                            "Isi : " + val.isi_notifikasi + "<br>" +
+                            "Tanggal : " + val.tanggal_notifikasi,
+                      sticky: true,
+                      after_close: function() {
+                        cek_notifikasi_lagi(val.id_notifikasi);
+                      }
+                    });
+                  });
+                });
+              };
+            };
+          });
+        });
+      </script>
   </body>
   <!-- END BODY -->

@@ -12,7 +12,7 @@ class Home extends CI_Controller {
 
 	public function index()
 	{
-		$data['halaman'] = $this->db->get('halaman', 4, 0);
+		$data['halaman'] = $this->db->get('halaman', 5, 0);
 		$data['posts'] = $this->M_Home->berita_index();
 
 		$this->load->view('home/home', $data);
@@ -87,7 +87,7 @@ class Home extends CI_Controller {
     			$this->session->set_userdata($session);
     			redirect('staf','refresh');
     		} else {
-    			$this->session->set_flashdata('eror_login', 'Error. Coba beberapa saat lagi.');
+    			$this->session->set_flashdata('eror_login', 'Error. Username dan password salah!');
     			redirect('home','refresh');
     		}
         }
@@ -114,7 +114,66 @@ class Home extends CI_Controller {
 
 		$data['tags'] = $this->M_Home->join_artikel_tags($id)->result_array();
 
+		$this->db->select('komentar.*');
+		$this->db->from('komentar');
+		$this->db->where('id_artikel', $id);
+		$this->db->order_by('tanggal_komentar', 'desc');
+		$data['komentar'] = $this->db->get();
+
 		$this->load->view('home/artikel', $data);
+	}
+
+	public function tambah_komentar()
+	{
+		$artikel = $this->input->post('artikel', TRUE);
+		$nama = $this->input->post('nama', TRUE);
+		$website = $this->input->post('website', TRUE);
+		$email = $this->input->post('email', TRUE);
+		$komentar = $this->input->post('komentar', TRUE);
+		$avatar = $this->input->post('avatar', TRUE);
+		$judul = $this->input->post('judul', TRUE);
+
+		// untuk tabel komentar
+		$query = $this->db->get_where('artikel', array("id" => $artikel))->result_array();
+		if ($query[0]['kategori'] == "Berita") {
+			$penulis = NULL;
+		} else {
+			$penulis = $query[0]['id_penulis'];
+		}
+
+        // Check if user has javascript enabled
+        if($this->input->post('ajax') != '1'){
+            //redirect('cart'); // If javascript is not enabled, reload the page with new data
+            } else { 
+                if ($this->input->post('komentar', TRUE)) {
+                    $data = array(
+                    	'id_artikel' => $artikel,
+                        'nama_komentator' => $nama,
+                        'website_komentator' => $website,
+                        'email_komentator' => $email,
+                        'isi_komentar' => $komentar,
+                        'avatar_komentator' => $avatar,
+                        'tanggal_komentar' => date("Y-m-d H:i:s"),
+                    );
+
+                    $this->db->insert('komentar', $data);
+
+                    $notif = array(
+                    	"id_artikel" => $artikel,
+                    	"dari_id" => $this->session->userdata('id'),
+                    	"untuk_id" => $penulis,
+                    	"isi_notifikasi" => "Ada komentar baru di artikel yang berjudul {$judul}. Cek artikel tersebut untuk melilhat lebih lanjut. <br><small><em>Klik (x) untuk menutup notifikasi ini.</em></small>",
+                    	"tanggal_notifikasi" => date("Y-m-d H:i:s"),
+                    	"status_notifikasi" => "Sent",
+                    );
+
+                    $this->db->insert('notifikasi', $notif);
+                    	    
+                    echo "true";
+                } else {
+                    echo 'false';
+                }   
+            }
 	}
 
 	public function search_tag($id)
@@ -169,6 +228,7 @@ class Home extends CI_Controller {
 
 	public function berita()
 	{
+		$this->db->select('artikel.id');
 		$this->db->where('artikel.kategori', 'Berita');
 		$this->db->from('artikel');
 		$num = $this->db->count_all_results();
@@ -218,8 +278,9 @@ class Home extends CI_Controller {
 
 	public function blog()
 	{
-		$this->db->select('artikel.id', FALSE);
+		$this->db->select('artikel.id');
 		$this->db->where('artikel.kategori', 'Blog');
+		$this->db->where('artikel.status', 'Published');
 		$this->db->from('artikel');
 		$num = $this->db->count_all_results();
 

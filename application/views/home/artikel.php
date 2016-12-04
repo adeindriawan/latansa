@@ -51,75 +51,161 @@
         <?php echo $artikel[0]['isi']; ?>
         <p class="right">Oleh: <a href="<?php echo base_url() ?>home/profil/<?php echo $artikel[0]['id_penulis'] ?>"><?php echo $artikel[0]['username'] ?></a><?php echo " pada " . $artikel[0]['tanggal'] ?></p>
         <div id="comments">
-          <h2>Comments</h2>
-          <ul>
-            <li>
-              <article>
-                <header>
-                  <figure class="avatar"><img src="../images/demo/avatar.png" alt=""></figure>
-                  <address>
-                  By <a href="#">A Name</a>
-                  </address>
-                  <time datetime="2045-04-06T08:15+00:00">Friday, 6<sup>th</sup> April 2045 @08:15:00</time>
-                </header>
-                <div class="comcont">
-                  <p>This is an example of a comment made on a post. You can either edit the comment, delete the comment or reply to the comment. Use this as a place to respond to the post or to share what you are thinking.</p>
-                </div>
-              </article>
-            </li>
-            <li>
-              <article>
-                <header>
-                  <figure class="avatar"><img src="../images/demo/avatar.png" alt=""></figure>
-                  <address>
-                  By <a href="#">A Name</a>
-                  </address>
-                  <time datetime="2045-04-06T08:15+00:00">Friday, 6<sup>th</sup> April 2045 @08:15:00</time>
-                </header>
-                <div class="comcont">
-                  <p>This is an example of a comment made on a post. You can either edit the comment, delete the comment or reply to the comment. Use this as a place to respond to the post or to share what you are thinking.</p>
-                </div>
-              </article>
-            </li>
-            <li>
-              <article>
-                <header>
-                  <figure class="avatar"><img src="../images/demo/avatar.png" alt=""></figure>
-                  <address>
-                  By <a href="#">A Name</a>
-                  </address>
-                  <time datetime="2045-04-06T08:15+00:00">Friday, 6<sup>th</sup> April 2045 @08:15:00</time>
-                </header>
-                <div class="comcont">
-                  <p>This is an example of a comment made on a post. You can either edit the comment, delete the comment or reply to the comment. Use this as a place to respond to the post or to share what you are thinking.</p>
-                </div>
-              </article>
-            </li>
+          <h2>Komentar unutk artikel ini</h2>
+          <ul id="kolom-komentar">
+            <?php if ($komentar->num_rows() > 0) { ?>
+              <?php foreach ($komentar->result_array() as $komen) { ?>
+                <li>
+                  <article>
+                    <header>
+                      <figure class="avatar"><img <?php if ($komen['avatar_komentator'] == NULL) { ?>
+                        src="<?php echo base_url() ?>/images/demo/avatar.png" alt=""
+                      <?php } else { ?>
+                        src="<?php echo base_url() ?>/images/profil/avatar/<?php echo $komen['avatar_komentator'] ?>" alt=""
+                      <?php } ?>
+                      >
+                      </figure>
+                      <address>
+                      <?php echo $komen['nama_komentator'] ?>
+                      </address>
+                      <time datetime="2045-04-06T08:15+00:00">pada <?php echo $komen['tanggal_komentar'] ?></time>
+                    </header>
+                    <div class="comcont">
+                      <p><?php echo $komen['isi_komentar'] ?></p>
+                    </div>
+                  </article>
+                </li>
+              <?php } ?>
+            <?php } else { ?>
+              <p>Belum ada komentar pada artikel ini.</p>
+            <?php } ?>
           </ul>
-          <h2>Write A Comment</h2>
-          <form action="#" method="post">
-            <div class="one_third first">
-              <label for="name">Name <span>*</span></label>
-              <input type="text" name="name" id="name" value="" size="22">
-            </div>
-            <div class="one_third">
-              <label for="email">Mail <span>*</span></label>
-              <input type="text" name="email" id="email" value="" size="22">
-            </div>
-            <div class="one_third">
-              <label for="url">Website</label>
-              <input type="text" name="url" id="url" value="" size="22">
-            </div>
-            <div class="block clear">
-              <label for="comment">Your Comment</label>
-              <textarea name="comment" id="comment" cols="25" rows="10"></textarea>
-            </div>
-            <div>
-              <input name="submit" type="submit" value="Submit Form">
-              &nbsp;
-              <input name="reset" type="reset" value="Reset Form">
-            </div>
-          </form>
+          <h2>Tulis komentar</h2>
+          <?php if ($this->session->userdata('id') == 0) { ?>
+            <form role="form" id="form-komentar">
+              <div class="one_third first">
+                <label for="name">Nama <span>*</span></label>
+                <input type="text" name="nama" id="name" value="" size="22">
+              </div>
+              <div class="one_third">
+                <label for="email">E-Mail <span>*</span></label>
+                <input type="text" name="email" id="email" value="" size="22">
+              </div>
+              <div class="one_third">
+                <label for="url">Website</label>
+                <input type="text" name="website" id="url" value="" size="22">
+              </div>
+              <div class="block clear">
+                <label for="comment">Komentar Anda</label>
+                <textarea name="komentar" id="comment" cols="25" rows="10"></textarea>
+              </div>
+              <div>
+                <input type="button" class="btn btn-default" id="submitKomentar" value="Kirim Komentar">
+                &nbsp;
+                <input type="button" class="btn btn-default" id="batal" value="Batal">
+              </div>
+            </form>
+            <script type="text/javascript">
+              $(document).ready(function() {
+                var link = "<?php echo base_url() ?>";
+                $("#submitKomentar").click(function(event) {
+                  var jud = "<?php echo $artikel[0]['judul'] ?>";
+                  var art = "<?php echo $this->uri->segment(3) ?>";
+                  var tgl = "<?php echo date('Y-m-d H:i:s') ?>";
+                  var nam = $("#form-komentar").find('input[name="nama"]').val();
+                  var ema = $("#form-komentar").find('input[name="email"]').val();
+                  var web = $("#form-komentar").find('input[name="website"]').val();
+                  var kom = $("#form-komentar").find('textarea[name="komentar"]').val();
+                  /* Act on the event */
+                  $.post(link + 'home/tambah_komentar', {artikel: art, nama: nam, email: ema, website: web, komentar: kom, judul: jud, ajax: 1}, function(data) {
+                    /*optional stuff to do after success */
+                    if (data == 'false') {
+                      $("#gglModal").modal("show");
+                    } else{
+                      $("#kolom-komentar").prepend("<li>" + 
+                                                  "<article>" +
+                                                  "<header>" +
+                                                  "<figure class='avatar'><img src='<?php echo base_url() ?>/images/demo/avatar.png' alt=''></figure>" +
+                                                  "<address>" + nam + "</address>" +
+                                                  "<time datetime='2045-04-06T08:15+00:00'>pada " + tgl + "</time>" +
+                                                  "</header>" +
+                                                  "<div class='comcont'>" + kom + "</div>" +
+                                                  "</article>" +
+                                                  "</li>");
+                      $("#sksModal").modal("show");
+                    };
+                  });
+                });
+                $("#batal").click(function(event) {
+                  var nam = $("#form-komentar").find('input[name="nama"]').val();
+                  var ema = $("#form-komentar").find('input[name="email"]').val();
+                  var web = $("#form-komentar").find('input[name="website"]').val();
+                  var kom = $("#form-komentar").find('textarea[name="komentar"]').val();
+                  /* Act on the event */
+                  nam.val("");
+                  ema.val("");
+                  web.val("");
+                  kom.val("");
+                });
+              });
+            </script>
+          <?php } else { ?>
+            <form role="form" id="form-komentar">
+              <label><span id="username"><?php echo $this->session->userdata('username'); ?></span></label>
+              <div class="block clear">
+                <label for="comment">Komentar Anda</label>
+                <textarea name="komentar" id="comment" cols="25" rows="10"></textarea>
+              </div>
+              <div>
+                <input type="button" class="btn btn-default" id="submitKomentar" value="Kirim Komentar">
+                &nbsp;
+                <input type="button" class="btn btn-default" id="batal" value="Batal">
+              </div>
+            </form>
+            <script type="text/javascript">
+              $(document).ready(function() {
+                var link = "<?php echo base_url() ?>";
+                $("#submitKomentar").click(function(event) {
+                  var jud = "<?php echo $artikel[0]['judul'] ?>";
+                  var art = "<?php echo $this->uri->segment(3) ?>";
+                  var tgl = "<?php echo date('Y-m-d H:i:s') ?>";
+                  var nam = $("#username").text();
+                  var kom = $("#form-komentar").find('textarea[name="komentar"]').val();
+                  var ava = "<?php echo $this->session->userdata('type'); ?>" + "_" + "<?php echo $this->session->userdata('username'); ?>" + ".jpg";
+                  /* Act on the event */
+                  $.post(link + 'home/tambah_komentar', {artikel: art, nama: nam, komentar: kom, avatar: ava, judul: jud, ajax: 1}, function(data) {
+                    /*optional stuff to do after success */
+                    if (data == 'false') {
+                      $("#gglModal").modal("show");
+                    } else{
+                      $("#kolom-komentar").prepend("<li>" + 
+                                                  "<article>" +
+                                                  "<header>" +
+                                                  "<figure class='avatar'><img src='<?php echo base_url() ?>/images/profil/avatar/'" + ava + " alt=''></figure>" +
+                                                  "<address>" + nam + "</address>" +
+                                                  "<time datetime='2045-04-06T08:15+00:00'>pada " + tgl + "</time>" +
+                                                  "</header>" +
+                                                  "<div class='comcont'>" + kom + "</div>" +
+                                                  "</article>" +
+                                                  "</li>");
+                      $("#sksModal").modal("show");
+                    };
+                  });
+                });
+                $("#batal").click(function(event) {
+                  var nam = $("#form-komentar").find('input[name="nama"]').val();
+                  var ema = $("#form-komentar").find('input[name="email"]').val();
+                  var web = $("#form-komentar").find('input[name="website"]').val();
+                  var kom = $("#form-komentar").find('textarea[name="komentar"]').val();
+                  /* Act on the event */
+                  nam.val("");
+                  ema.val("");
+                  web.val("");
+                  kom.val("");
+                });
+              });
+            </script>
+          <?php } ?>
         </div>
         <!-- ################################################################################################ --> 
       </div>
@@ -132,61 +218,32 @@
 <!-- ################################################################################################ --> 
 <!-- ################################################################################################ --> 
 <!-- ################################################################################################ -->
-<div class="wrapper row4">
-  <div class="rounded">
-    <footer id="footer" class="clear"> 
-      <!-- ################################################################################################ -->
-      <div class="one_third first">
-        <figure class="center"><img class="btmspace-15" src="../images/demo/worldmap.png" alt="">
-          <figcaption><a href="#">Find Us With Google Maps &raquo;</a></figcaption>
-        </figure>
+<?php $this->load->view('include/footer'); ?>
+<div class="modal fade" id="gglModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="exampleModalLabel" style="color:black;">Dialog</h4>
+        </div>
+        <div class="modal-body" style="color:black;">
+          Gagal mengirim komentar!
+        </div>
       </div>
-      <div class="one_third">
-        <address>
-        Long Educational Facility Name<br>
-        Address Line 2<br>
-        Town/City<br>
-        Postcode/Zip<br>
-        <br>
-        <i class="fa fa-phone pright-10"></i> xxxx xxxx xxxxxx<br>
-        <i class="fa fa-envelope-o pright-10"></i> <a href="#">contact@domain.com</a>
-        </address>
-      </div>
-      <div class="one_third">
-        <p class="nospace btmspace-10">Stay Up to Date With What's Happening</p>
-        <ul class="faico clear">
-          <li><a class="faicon-twitter" href="#"><i class="fa fa-twitter"></i></a></li>
-          <li><a class="faicon-linkedin" href="#"><i class="fa fa-linkedin"></i></a></li>
-          <li><a class="faicon-facebook" href="#"><i class="fa fa-facebook"></i></a></li>
-          <li><a class="faicon-flickr" href="#"><i class="fa fa-flickr"></i></a></li>
-          <li><a class="faicon-rss" href="#"><i class="fa fa-rss"></i></a></li>
-        </ul>
-        <form class="clear" method="post" action="#">
-          <fieldset>
-            <legend>Subscribe To Our Newsletter:</legend>
-            <input type="text" value="" placeholder="Enter Email Here&hellip;">
-            <button class="fa fa-sign-in" type="submit" title="Sign Up"><em>Sign Up</em></button>
-          </fieldset>
-        </form>
-      </div>
-      <!-- ################################################################################################ --> 
-    </footer>
-  </div>
+    </div>
 </div>
-<!-- ################################################################################################ --> 
-<!-- ################################################################################################ --> 
-<!-- ################################################################################################ -->
-<div class="wrapper row5">
-  <div id="copyright" class="clear"> 
-    <!-- ################################################################################################ -->
-    <p class="fl_left">Copyright &copy; 2014 - All Rights Reserved - <a href="#">Domain Name</a></p>
-    <p class="fl_right">Template by <a target="_blank" href="http://www.os-templates.com/" title="Free Website Templates">OS Templates</a></p>
-    <!-- ################################################################################################ --> 
-  </div>
+<div class="modal fade" id="sksModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="exampleModalLabel" style="color:black">Dialog</h4>
+        </div>
+        <div class="modal-body" style="color:black;">
+          Sukses mengirim komentar!
+        </div>
+      </div>
+    </div>
 </div>
-<!-- JAVASCRIPTS --> 
-<script src="../layout/scripts/jquery.min.js"></script> 
-<script src="../layout/scripts/jquery.fitvids.min.js"></script> 
-<script src="../layout/scripts/jquery.mobilemenu.js"></script>
 </body>
 </html>

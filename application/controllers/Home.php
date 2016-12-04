@@ -626,46 +626,6 @@ class Home extends CI_Controller {
 		$this->load->view('home/halaman', $data);
 	}
 
-	public function calon()
-	{
-		$this->db->select('halaman.*');
-		$this->db->from('halaman');
-		$this->db->where('halaman.alamat', 'calon');
-		$data['halaman'] = $this->db->get()->result_array();
-
-		$this->load->view('home/halaman', $data);
-	}
-
-	public function santri()
-	{
-		$this->db->select('halaman.*');
-		$this->db->from('halaman');
-		$this->db->where('halaman.alamat', 'santri');
-		$data['halaman'] = $this->db->get()->result_array();
-
-		$this->load->view('home/halaman', $data);
-	}
-
-	public function wali()
-	{
-		$this->db->select('halaman.*');
-		$this->db->from('halaman');
-		$this->db->where('halaman.alamat', 'wali');
-		$data['halaman'] = $this->db->get()->result_array();
-
-		$this->load->view('home/halaman', $data);
-	}
-
-	public function alumni()
-	{
-		$this->db->select('halaman.*');
-		$this->db->from('halaman');
-		$this->db->where('halaman.alamat', 'alumni');
-		$data['halaman'] = $this->db->get()->result_array();
-
-		$this->load->view('home/halaman', $data);
-	}
-
 }
 
 /* End of file Home.php */
